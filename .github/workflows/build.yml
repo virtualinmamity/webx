@@ -86,3 +86,32 @@ jobs:
         with:
           name: Napture-macos-universial.dmg
           path: napture/target/release/Napture-macos-universial.dmg
+
+  # IDK windows stuff
+  build-windows-x86_64:
+    name: Build windows-x86_64
+    runs-on: windows-latest
+
+    steps:
+      - name: Install deps
+        uses: msys2/setup-msys2@v2
+        with:
+          update: true
+          install: mingw-w64-x86_64-toolchain base-devel mingw-w64-x86_64-gtk4 mingw-w64-x86_64-gettext mingw-w64-x86_64-libxml2 mingw-w64-x86_64-librsvg mingw-w64-x86_64-pkgconf mingw-w64-x86_64-gcc mingw-w64-x86_64-libadwaita mingw-w64-x86_64-lua
+      - uses: actions/checkout@v4
+      - name: Build Napture
+        run: |
+          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\include"
+          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\bin"
+          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\lib"
+          cd napture
+          cargo build --release
+      - name: Pack Napture
+        run: |
+          cd napture/target/release
+          cp webx.exe Napture-windows-x86_64.exe
+      - name: Upload Napture
+        uses: actions/upload-artifact@v4
+        with:
+          name: Napture-windows-x86_64.exe
+          path: napture/target/release/Napture-windows-x86_64.exe
