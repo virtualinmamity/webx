@@ -109,6 +109,8 @@ jobs:
       - name: Build Napture
         run: |
           $Env:Path += ';C:\msys64\mingw64\include;C:\msys64\mingw64\bin;C:\msys64\mingw64\lib'
+          rustup toolchain install stable-gnu
+          rustup default stable-gnu
           cd napture
           cargo build --release --verbose
       - name: Pack Napture
