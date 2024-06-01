@@ -10,7 +10,7 @@ env:
 jobs:
   build-linux-x86_64:
     name: Build linux-x86_64
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - uses: actions/checkout@v4
@@ -18,7 +18,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y libpango1.0-dev libgtk-4-dev libgraphene-1.0-dev libadwaita-1-dev liblua5.4-dev
-          PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 pkg-config --libs --cflags gtk4 'gtk4 >= 4.11'
       - name: Build Napture
         run: |
           cd napture
