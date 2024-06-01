@@ -121,4 +121,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Napture-windows-x86_64.exe
-          path: napture/target/release/Napture-windows-x86_64.exe
+          path: |
+            napture/target/release/Napture-windows-x86_64.exe
+            C:\msys64\mingw64\lib\*
