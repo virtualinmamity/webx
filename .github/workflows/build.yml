@@ -27,9 +27,8 @@ jobs:
       - name: Pack Napture into AppImage
         run: |
           cd napture/target/release
-          mkdir -p io.github.face_hh.Napture.AppDir/usr/bin/
           mkdir -p io.github.face_hh.Napture.AppDir/usr/share/metainfo/
-          cp webx io.github.face_hh.Napture.AppDir/usr/bin/nepture
+          cp webx io.github.face_hh.Napture.AppDir/AppRun
           cp ../../io.github.face_hh.Napture.metainfo.xml io.github.face_hh.Napture.AppDir/usr/share/metainfo/
           cp ../../io.github.face_hh.Napture.desktop io.github.face_hh.Napture.AppDir/
           cp ../../io.github.face_hh.Napture.svg io.github.face_hh.Napture.AppDir/
