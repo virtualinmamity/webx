@@ -100,6 +100,10 @@ jobs:
     name: Build windows-x86_64
     runs-on: windows-latest
 
+    defaults:
+      run:
+        shell: msys2 {0}
+
     steps:
       - name: Install deps
         uses: msys2/setup-msys2@v2
@@ -109,9 +113,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Napture
         run: |
-          $Env:Path += ';C:\msys64\mingw64\include;C:\msys64\mingw64\bin;C:\msys64\mingw64\lib'
           cd napture
-          cargo build --release
+          cargo build --release --verbose
       - name: Pack Napture
         run: |
           cd napture/target/release
