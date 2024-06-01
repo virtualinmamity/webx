@@ -70,6 +70,8 @@ pub async fn build_ui(
     scroll: Rc<RefCell<gtk::ScrolledWindow>>,
     searchbar: Rc<RefCell<gtk::SearchEntry>>,
 ) -> Result<(gtk::Box, CssProvider)> {
+    let furl = tab.url.split("?").nth(0).unwrap_or(&tab.url);
+
     css::reset_css();
 
     let tags = Rc::new(RefCell::new(Vec::new()));
@@ -86,7 +88,9 @@ pub async fn build_ui(
 
     let mut css: String = css::reset_css();
 
-    let (head, body) = match parse_html(tab.url.clone()).await {
+    println!("{}", tab.url);
+    
+    let (head, body) = match parse_html(furl.to_string()).await {
         Ok(ok) => ok,
         Err(e) => {
             eprintln!("Couldn't parse HTML: {}", e);
@@ -120,7 +124,7 @@ pub async fn build_ui(
             let aa = &Rc::new(RefCell::new(&tab));
 
             let tabb = Rc::clone(aa);
-            render_head(element, contents, tabb).await;
+            render_head(element, contents, tabb, &furl.to_string()).await;
         }
     }
 
@@ -171,10 +175,10 @@ pub async fn build_ui(
         let luacode = if src.starts_with("https://") {
             fetch_file(src).await
         } else {
-            fetch_file(tab.url.clone() + "/" + &src).await
+            fetch_file(format!("{}/{}", furl, src)).await
         };
 
-        if let Err(e) = super::lua::run(luacode, tags).await {
+        if let Err(e) = super::lua::run(luacode, tags, tab.url.clone()).await {
             println!("ERROR: Failed to run lua: {}", e);
         }
     }
@@ -206,7 +210,7 @@ pub async fn build_ui(
     Ok((html_view, provider))
 }
 
-async fn render_head(element: &Element, contents: Option<&Node>, tab: Rc<RefCell<&Tab>>) {
+async fn render_head(element: &Element, contents: Option<&Node>, tab: Rc<RefCell<&Tab>>, furl: &String) {
     match element.name.as_str() {
         "title" => {
             if let Some(contents) = contents {
@@ -230,7 +234,7 @@ async fn render_head(element: &Element, contents: Option<&Node>, tab: Rc<RefCell
                         }
                     } else {
                         // todo: a mutex would be better here, since this has to go through async
-                        let css = fetch_file(tab.borrow().url.clone() + "/" + href).await;
+                        let css = fetch_file(format!("{}/{}", furl, href)).await;
 
                         css::load_css(css);
                     }
@@ -447,7 +451,7 @@ fn render_html(
                 }
             };
 
-            let stream = match fetch_image_to_pixbuf(url) {
+            let stream = match fetch_image_to_pixbuf(url.clone()) {
                 Ok(s) => s,
                 Err(e) => {
                     println!("ERROR: Failed to load image: {}", e);
@@ -459,14 +463,7 @@ fn render_html(
 
             let image = gtk::Picture::builder()
                 .css_name("img")
-                .alternative_text(
-                    element
-                        .attributes
-                        .get("alt")
-                        .unwrap_or(&Some(String::new()))
-                        .clone()
-                        .unwrap_or_default(),
-                )
+                .alternative_text(url)
                 .css_classes(element.classes.clone())
                 .halign(gtk::Align::Start)
                 .valign(gtk::Align::Start)
@@ -722,7 +719,7 @@ fn render_list(
     }
 }
 
-fn fetch_image_to_pixbuf(url: String) -> Result<gdk_pixbuf::Pixbuf> {
+pub(crate) fn fetch_image_to_pixbuf(url: String) -> Result<gdk_pixbuf::Pixbuf> {
     let handle = thread::spawn(move || {
         reqwest::blocking::get(url)
             .map_err(|e| e.to_string())
@@ -752,13 +749,15 @@ fn fetch_image_to_pixbuf(url: String) -> Result<gdk_pixbuf::Pixbuf> {
 }
 
 async fn fetch_file(url: String) -> String {
+    println!("Attempting to navigate to {url}...");
+
     if url.starts_with("file://") {
         let path = url.replace("file://", "");
-
-        match fs::read_to_string(path) {
+        
+        match fs::read_to_string(&format!("{}", path)) {
             Ok(text) => text,
             Err(_) => {
-                eprintln!("ERROR: Failed to read file: {}", url);
+                eprintln!("ERROR: Failed to read file: {}", path);
                 String::new()
             }
         }
