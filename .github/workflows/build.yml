@@ -109,9 +109,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build Napture
         run: |
-          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\include"
-          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\bin"
-          Add-Content $env:GITHUB_PATH "C:\msys64\mingw64\lib"
+          $Env:Path += ';C:\msys64\mingw64\include;C:\msys64\mingw64\bin;C:\msys64\mingw64\lib'
           cd napture
           cargo build --release
       - name: Pack Napture
