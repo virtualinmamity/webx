@@ -28,10 +28,18 @@ jobs:
         run: |
           cd napture/target/release
           mkdir -p io.github.face_hh.Napture.AppDir/usr/share/metainfo/
+          mkdir -p io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
           cp webx io.github.face_hh.Napture.AppDir/AppRun
           cp ../../io.github.face_hh.Napture.metainfo.xml io.github.face_hh.Napture.AppDir/usr/share/metainfo/
           cp ../../io.github.face_hh.Napture.desktop io.github.face_hh.Napture.AppDir/
           cp ../../io.github.face_hh.Napture.svg io.github.face_hh.Napture.AppDir/
+          cp /usr/lib/x86_64-linux-gnu/libadwaita-1.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/libgtk-4.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/libpango-1.0.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/libgio-2.0.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
+          cp /usr/lib/x86_64-linux-gnu/liblua5.4.so.* io.github.face_hh.Napture.AppDir/usr/lib/x86_64-linux-gnu/
           wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
           chmod a+x appimagetool-x86_64.AppImage
           ./appimagetool-x86_64.AppImage io.github.face_hh.Napture.AppDir Napture-linux-x86_64.AppImage
